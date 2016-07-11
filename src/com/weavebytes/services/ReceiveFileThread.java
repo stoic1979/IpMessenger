@@ -26,6 +26,8 @@ public class ReceiveFileThread  extends Thread {
 	 * thread run method
 	 */
 	public void run() {
+		
+		System.out.println("[ReceiveFileThread] :: started... ");
 
 		try {
 			Socket socket = new Socket(InetAddress.getByName("localhost"), Config.TCP_PORT);

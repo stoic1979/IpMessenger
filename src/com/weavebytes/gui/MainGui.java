@@ -394,7 +394,7 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		Path p = Paths.get(filePath);
 	    String fileName = p.getFileName().toString();
 	     
-	    new SendFileThread(filePath).start();
+	    new SendFileThread(filePath, otherHost).start();
 	}
 
 	/**
