@@ -350,16 +350,27 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		tfSendMsg.setText("");
 	}
 	
+	/**
+	 * function sends a "SFR - Send File Request" to other user
+	 */
 	private void sendFile() {
+		
+		String otherHost = userList.getSelectedValue().toString();
+		String otherIP = htblUsers.get(otherHost );
 		
 		JFileChooser fileChooser = new JFileChooser();
         int returnValue = fileChooser.showOpenDialog(null);
         
         if (returnValue == JFileChooser.APPROVE_OPTION) {
-          File selectedFile = fileChooser.getSelectedFile();
-          System.out.println(selectedFile.getName());
+           File selectedFile = fileChooser.getSelectedFile();
+           
+           System.out.println(selectedFile.getName());
            System.out.println("getCurrentDirectory(): " + fileChooser.getCurrentDirectory());
            System.out.println("getSelectedFile() : " + fileChooser.getSelectedFile());
+           
+           String fullPath = fileChooser.getCurrentDirectory() + File.separator + fileChooser.getSelectedFile();
+           
+           Utils.sendUdpMsg("SFR" + myHost + "::" + fullPath, otherIP, Config.UDP_PORT);	
         }
 	}
 
