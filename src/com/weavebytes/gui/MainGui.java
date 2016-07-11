@@ -100,7 +100,7 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		model    = new DefaultListModel();
 		userList = new JList(model);
 		userList.addListSelectionListener(this);
-		model.addElement("Dumy");
+
 	    JScrollPane userListScrollPane = new JScrollPane(userList);
     
 	    // bottom...........................................
