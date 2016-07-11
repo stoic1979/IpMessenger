@@ -367,9 +367,28 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 	    } else if (response == JOptionPane.YES_OPTION) {
 	    
 	    System.out.println("Yes button clicked");  
-	      
-	    Utils.sendUdpMsg("GMF" + myHost + "::" + filePath, otherIP, Config.UDP_PORT);	
-	    new ReceiveFileThread(fileName).start();
+	    
+	 // parent component of the dialog
+	    JFrame parentFrame = new JFrame();
+	     
+	    JFileChooser fileChooser = new JFileChooser();
+	    fileChooser.setDialogTitle("Specify a file to save");   
+
+	    fileChooser.setSelectedFile(new File(System.getProperty("user.home") + File.separator  + fileName) ); 
+	    int userSelection = fileChooser.showSaveDialog(parentFrame);
+	     
+	    if (userSelection == JFileChooser.APPROVE_OPTION) {
+	        File fileToSave = fileChooser.getSelectedFile();
+	        
+	        
+	        
+	        String savePath = fileToSave.getAbsolutePath();
+	        System.out.println("Save as file: " + savePath);
+	           
+		    Utils.sendUdpMsg("GMF" + myHost + "::" + filePath, otherIP, Config.UDP_PORT);	
+		    new ReceiveFileThread(savePath).start();
+	    }
+	   
 	         
 	    } else if (response == JOptionPane.CLOSED_OPTION) {
 	      System.out.println("JOptionPane closed");
