@@ -151,6 +151,7 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		pack();
 
 		setSize(720, 640);
+		setExtendedState(java.awt.Frame.MAXIMIZED_BOTH);
 		setVisible(true);
 
 	}
