@@ -7,6 +7,7 @@ import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.util.Hashtable;
 
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -35,15 +36,13 @@ import com.weavebytes.utils.Utils;
 public class MainGui extends JFrame implements WindowListener, ActionListener, Runnable{
 
 	
-	private JList userList;
-	private DefaultListModel model;
-    
-    private String myIP;
-    private String myHost;
-    
-    boolean stopped = false;
-	
-    Thread thrdMsgReceiver;
+	private JList 						userList;
+	private DefaultListModel 			model;  
+    private String 						myIP;
+    private String 						myHost;
+    private boolean 					stopped = false;
+    private Thread 						thrdMsgReceiver;
+	private Hashtable <String, String>  htblUsers = new Hashtable <String, String>();
 	
     /**
      * constructor
@@ -84,21 +83,19 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 	    btnSend.setActionCommand("Send");
 	    btnSend.addActionListener(this);
 	    
-	    JTextField tfSendMsg = new JTextField("send msg");
-	    JTextArea taMsgs = new JTextArea("some messages");
+	    JTextField tfSendMsg       = new JTextField("send msg");
+	    JTextArea taMsgs           = new JTextArea("some messages");
 	    JScrollPane msgsScrollPane = new JScrollPane(taMsgs);
 	    
 	    pnlCenterBottom.add(tfSendMsg, BorderLayout.CENTER);
-	    pnlCenterBottom.add(btnSend, BorderLayout.EAST);
-	    pnlCenter.add(msgsScrollPane, BorderLayout.CENTER);
+	    pnlCenterBottom.add(btnSend,   BorderLayout.EAST);
+	    pnlCenter.add(msgsScrollPane,  BorderLayout.CENTER);
 	    pnlCenter.add(pnlCenterBottom, BorderLayout.SOUTH);
 		
-		model = new DefaultListModel();
+		model    = new DefaultListModel();
 		userList = new JList(model);
 	    JScrollPane userListScrollPane = new JScrollPane(userList);
-	    for (int i = 0; i < 10; i++)
-	        model.addElement("Element " + i);
-	    
+    
 	    // bottom...........................................
 	    JLabel statusbar = new JLabel(" Statusbar");
 	    
@@ -107,12 +104,11 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 	    JLabel right = new JLabel(" right side ");
 
 	    
-	    add(toolbar, BorderLayout.NORTH);
+	    add(toolbar,            BorderLayout.NORTH);
 	    add(userListScrollPane, BorderLayout.WEST);
-	    add(pnlCenter, BorderLayout.CENTER);
-	    add(right, BorderLayout.EAST);
-	    
-	    add(statusbar, BorderLayout.SOUTH);
+	    add(pnlCenter,          BorderLayout.CENTER);
+	    add(right, 	            BorderLayout.EAST);
+	    add(statusbar,          BorderLayout.SOUTH);
 	    pack();
 	    
 	    setSize(720, 640);
@@ -216,22 +212,48 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		if(msg.startsWith("MTI")) processMTI(msg.substring(3));	
 	}
 	
+	/**
+	 * function process an "I Am In" message
+	 * 
+	 * @param msg
+	 */
 	private void processIAI(String msg) {
 		System.out.println("Got IAI=" + msg);
 		
 		String l[] = msg.split("\\:");
 	
-		String otherIp= l[0];
+		String otherIP   = l[0];
 		String otherHost = l[1];	
 		
-		model.addElement(otherHost);
 		
-		Utils.sendUdpMsg("MTI" + myIP + ":" + myHost , otherIp, Config.UDP_PORT);
+		
+		Utils.sendUdpMsg("MTI" + myIP + ":" + myHost , otherIP, Config.UDP_PORT);
+		
+		if(!htblUsers.contains(otherHost)) {
+			htblUsers.put(otherHost, otherIP);
+			model.addElement(otherHost);
+		}
 		
 	}
 	
+	/**
+	 * function process an "Me Too In" message
+	 * 
+	 * @param msg
+	 */
 	private void processMTI(String msg) {
-		System.out.println("Got IAI=" + msg);
+		
+		System.out.println("Got MTI=" + msg);
+		
+		String l[] = msg.split("\\:");
+	
+		String otherIP   = l[0];
+		String otherHost = l[1];	
+		
+		if(!htblUsers.contains(otherHost)) {
+			htblUsers.put(otherHost, otherIP);
+			model.addElement(otherHost);
+		}
 	}
 	
 	
