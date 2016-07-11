@@ -24,6 +24,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import com.weavebytes.config.Config;
 import com.weavebytes.utils.Utils;
@@ -34,7 +36,7 @@ import com.weavebytes.utils.Utils;
  * @author weavebytes
  *
  */
-public class MainGui extends JFrame implements WindowListener, ActionListener, Runnable{
+public class MainGui extends JFrame implements WindowListener, ActionListener, Runnable, ListSelectionListener{
 
 	JTextField tfSendMsg;
 	JTextArea taMsgs;
@@ -97,6 +99,8 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		
 		model    = new DefaultListModel();
 		userList = new JList(model);
+		userList.addListSelectionListener(this);
+		model.addElement("Dumy");
 	    JScrollPane userListScrollPane = new JScrollPane(userList);
     
 	    // bottom...........................................
@@ -322,6 +326,25 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		thrdMsgReceiver = new Thread(this);
 		thrdMsgReceiver.start();
 		Utils.sendUdpBroadcast("IAI" + myIP + ":" + myHost, Config.UDP_PORT);
+	}
+
+	@Override
+	public void valueChanged(ListSelectionEvent e) {
+		System.out.println("valueChanged: " + userList.getSelectedValue());
+		
+		taMsgs.setText("");
+		
+		String otherHost = userList.getSelectedValue().toString();
+		
+		if(!htblMessages.containsKey(otherHost) ) return;
+		
+		Vector<String> msgList = htblMessages.get(otherHost);
+		for(int i=0; i<msgList.size(); i++) {
+			
+			String msg = msgList.elementAt(i).toString();
+			taMsgs.setText(taMsgs.getText() + msg + "\n");
+		}
+		
 	}
 	
 	
