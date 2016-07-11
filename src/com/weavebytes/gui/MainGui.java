@@ -1,6 +1,8 @@
 package com.weavebytes.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowListener;
@@ -28,11 +30,14 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import java.io.File;
 
+import com.alee.laf.WebLookAndFeel;
 import com.weavebytes.config.Config;
 import com.weavebytes.services.ReceiveFileThread;
 import com.weavebytes.services.SendFileThread;
@@ -107,6 +112,7 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 	private void initGui() {
 
 		setLayout(new BorderLayout(5,5));
+
 
 		//---------------------------------------------------------
 		// TOP
@@ -184,6 +190,28 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 	 *********************************************************************                   
 	 */
 	public static void main(String[] args) {
+		
+		// You should work with UI (including installing L&F) inside Event Dispatch Thread (EDT)
+        SwingUtilities.invokeLater ( new Runnable ()
+        {
+            public void run ()
+            {
+                // Install WebLaF as application L&F
+                WebLookAndFeel.install ();
+
+                // You can also do that with one of old-fashioned ways:
+                // UIManager.setLookAndFeel ( new WebLookAndFeel () );
+                // UIManager.setLookAndFeel ( "com.alee.laf.WebLookAndFeel" );
+                // UIManager.setLookAndFeel ( WebLookAndFeel.class.getCanonicalName () );
+
+                // Create you application here using Swing components
+                // JFrame frame = ...
+
+                // Or use similar Web* components to get access to some extended features
+                // WebFrame frame = ...
+            }
+        } );
+		
 		new MainGui();
 	}
 
