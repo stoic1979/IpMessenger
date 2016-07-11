@@ -38,15 +38,47 @@ import com.weavebytes.utils.Utils;
  */
 public class MainGui extends JFrame implements WindowListener, ActionListener, Runnable, ListSelectionListener{
 
-	JTextField tfSendMsg;
-	JTextArea taMsgs;
+	/**
+	 * UI components
+	 */
+	private JTextField                  tfSendMsg;
+	private JTextArea                   taMsgs;
 	private JList 						userList;
-	private DefaultListModel 			model;  
-    private String 						myIP;
-    private String 						myHost;
-    private boolean 					stopped = false;
-    private Thread 						thrdMsgReceiver;
+	
+	/**
+	 * model to store string name of all hosts, 
+	 * to be shown on list in left side
+	 */
+	private DefaultListModel model;  
+    
+	/**
+	 * IP of this user
+	 */
+	private String 	myIP;
+	
+	/**
+	 * host of this user
+	 */
+    private String 	myHost;
+     
+    /**
+     * thread for receiving UDP messages
+     */
+    private Thread thrdMsgReceiver;
+    
+    /**
+     * flag to stop thread for receiving UDP messages
+     */
+    private boolean	stopped = false;
+    
+    /**
+     * hashtable to store a <host,ip> combination
+     */
 	private Hashtable <String, String>  htblUsers = new Hashtable <String, String>();
+	
+	/**
+     * hashtable to store a <host, message-list> combination
+     */
 	private Hashtable <String, Vector<String>>  htblMessages = new Hashtable <String, Vector<String>>();
 	
     /**
@@ -164,8 +196,7 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 
 
 	@Override
-	public void windowDeactivated(java.awt.event.WindowEvent e) {
-	}
+	public void windowDeactivated(java.awt.event.WindowEvent e) {}
 
 
 	@Override
@@ -177,7 +208,6 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		if(e.getActionCommand().equals("Refresh")) {
 			refreshClicked();	
 		}
-		
 	}
 	
 	/**
@@ -209,6 +239,7 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 	    	
 	    }
 	  }
+	
 	/**
 	 * function process messages received
 	 * 
@@ -289,10 +320,10 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		
 	}
 	
-	
+	/**
+	 * function sends a chat message to selected user on left side
+	 */
 	private void sendClicked() {
-		System.out.println("Sending message");
-		
 		String otherHost = userList.getSelectedValue().toString();
 		
 		String otherIP = htblUsers.get(otherHost );
@@ -310,8 +341,15 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		Vector<String> vct = htblMessages.get(otherHost);
 		vct.addElement(myHost + ": " + msg);
 		taMsgs.append(myHost + ": " + msg + "\n");
+		
+		tfSendMsg.setText("");
 	}
 	
+	/**
+	 * function sends IAI to all users in n/w
+	 * will cause user list to be refreshed on left side
+	 * as each user will response with MTI
+	 */
 	private void refreshClicked() {
 		System.out.println("handle refresh: " + Utils.getHost());
 		Utils.sendUdpBroadcast("IAI" + myIP + ":" + myHost, Config.UDP_PORT);
