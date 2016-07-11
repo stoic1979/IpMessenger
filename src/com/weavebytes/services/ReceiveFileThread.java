@@ -12,14 +12,17 @@ import com.weavebytes.config.Config;
 public class ReceiveFileThread  extends Thread {
 
 	private String filePath;
+	private String otherIP;
+
 
 	/**
 	 * constructor
 	 * 
 	 * @param filePath
 	 */
-	public ReceiveFileThread(String filePath) {
+	public ReceiveFileThread(String filePath, String otherIP) {
 		this.filePath = filePath;
+		this.otherIP = otherIP;
 	}
 
 	/**
@@ -30,7 +33,7 @@ public class ReceiveFileThread  extends Thread {
 		System.out.println("[ReceiveFileThread] :: started... ");
 
 		try {
-			Socket socket = new Socket(InetAddress.getByName("localhost"), Config.TCP_PORT);
+			Socket socket = new Socket(InetAddress.getByName(otherIP), Config.TCP_PORT);
 			byte[] contents = new byte[10000];
 
 			//Initialize the FileOutputStream to the output file's full path.

@@ -14,16 +14,14 @@ import java.io.OutputStream;
 public class SendFileThread extends Thread {
 
 	private String filePath;
-	private String otherHost;
 
 	/**
 	 * constructor
 	 * 
 	 * @param filePath
 	 */
-	public SendFileThread(String filePath, String otherHost) {
+	public SendFileThread(String filePath) {
 		this.filePath = filePath;
-		this.otherHost = otherHost;
 	}
 
 	/**
@@ -38,7 +36,7 @@ public class SendFileThread extends Thread {
 			Socket socket = ssock.accept();
 
 			//The InetAddress specification
-			InetAddress IA = InetAddress.getByName(otherHost); 
+			InetAddress IA = InetAddress.getByName("localhost"); 
 
 			//Specify the file
 			File file = new File(filePath);
