@@ -35,6 +35,7 @@ import com.weavebytes.utils.Utils;
  */
 public class MainGui extends JFrame implements WindowListener, ActionListener, Runnable{
 
+	JTextField tfSendMsg;
 	
 	private JList 						userList;
 	private DefaultListModel 			model;  
@@ -83,7 +84,7 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 	    btnSend.setActionCommand("Send");
 	    btnSend.addActionListener(this);
 	    
-	    JTextField tfSendMsg       = new JTextField("send msg");
+	    tfSendMsg       = new JTextField("send msg");
 	    JTextArea taMsgs           = new JTextArea("some messages");
 	    JScrollPane msgsScrollPane = new JScrollPane(taMsgs);
 	    
@@ -210,6 +211,7 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 	private void processMessage(String msg) {
 		if(msg.startsWith("IAI")) processIAI(msg.substring(3));	
 		if(msg.startsWith("MTI")) processMTI(msg.substring(3));	
+		if(msg.startsWith("TCM")) processTCM(msg.substring(3));	
 	}
 	
 	/**
@@ -256,10 +258,17 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		}
 	}
 	
+	private void processTCM(String msg) {
+		System.out.println("Got TCM=" + msg);
+	}
+	
 	
 	private void sendClicked() {
 		System.out.println("Sending message");
-		Utils.sendUdpBroadcast("IAIhello", Config.UDP_PORT);
+		
+		String otherIP = htblUsers.get( userList.getSelectedValue() );
+		
+		Utils.sendUdpMsg("TCM" + myHost + ":" + tfSendMsg.getText(), otherIP, Config.UDP_PORT);
 	}
 	
 	private void refreshClicked() {
