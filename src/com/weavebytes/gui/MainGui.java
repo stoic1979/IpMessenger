@@ -34,6 +34,8 @@ import javax.swing.event.ListSelectionListener;
 import java.io.File;
 
 import com.weavebytes.config.Config;
+import com.weavebytes.services.ReceiveFileThread;
+import com.weavebytes.services.SendFileThread;
 import com.weavebytes.utils.Utils;
 
 /**
@@ -264,6 +266,7 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		if(msg.startsWith("MTI")) processMTI(msg.substring(3));	
 		if(msg.startsWith("TCM")) processTCM(msg.substring(3));	
 		if(msg.startsWith("SFR")) processSFR(msg.substring(3));	
+		if(msg.startsWith("GMF")) processGMF(msg.substring(3));	
 	}
 
 	/**
@@ -330,20 +333,29 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		if(userList.getSelectedValue().equals(otherHost)) taMsgs.append(otherHost + ": " + otherMsg + "\n");
 	}
 	
+	
+	/**
+	 * other party send "SFR - Send File Request"
+	 * asking me to receive the file,
+	 * if I click yes, then other party should give me the file
+	 * so, send GMF request to other party
+	 * and start TCP thread to receive file 
+	 * @param msg
+	 */
 	private void processSFR(String msg) {
 		
 		String l[] = msg.split("\\::");
 		
 		String otherHost = l[0];
 		String filePath = l[1];
+		String otherIP = htblUsers.get(otherHost);
 		
 		Path p = Paths.get(filePath);
-	     String fileName = p.getFileName().toString();
+	    String fileName = p.getFileName().toString();
 		
-	     System.out.println("filePath = " + filePath);
-	     System.out.println("fileName = " + fileName);
-	     
-	     
+	    System.out.println("filePath = " + filePath);
+	    System.out.println("fileName = " + fileName);
+	      
 		JDialog.setDefaultLookAndFeelDecorated(true);
 	    int response = JOptionPane.showConfirmDialog(null, 
 	    		"Do you want to receive file from " + otherHost + " ?",
@@ -353,18 +365,36 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 	    if (response == JOptionPane.NO_OPTION) {
 	      System.out.println("No button clicked");
 	    } else if (response == JOptionPane.YES_OPTION) {
-	      System.out.println("Yes button clicked");
+	    
+	    System.out.println("Yes button clicked");  
 	      
-	      
-	      
-	      
-	      
-	      
+	    Utils.sendUdpMsg("GMF" + myHost + "::" + filePath, otherIP, Config.UDP_PORT);	
+	    new ReceiveFileThread("" + fileName).start();
+	         
 	    } else if (response == JOptionPane.CLOSED_OPTION) {
 	      System.out.println("JOptionPane closed");
 	    }
+	}
+	
+	/**
+	 * after "SFR - Send File Request" is accepted, 
+	 * a "GMF - Give Me File" is sent to other party
+	 * to send the file.
+	 *  
+	 * @param msg
+	 */
+	private void processGMF(String msg) {
 		
+		String l[] = msg.split("\\::");
 		
+		String otherHost = l[0];
+		String filePath = l[1];
+		String otherIP = htblUsers.get(otherHost);
+		
+		Path p = Paths.get(filePath);
+	    String fileName = p.getFileName().toString();
+	     
+	    new SendFileThread(filePath).start();
 	}
 
 	/**
@@ -423,7 +453,6 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 	private void refreshClicked() {
 		System.out.println("handle refresh: " + Utils.getHost());
 		Utils.sendUdpBroadcast("IAI" + myIP + ":" + myHost, Config.UDP_PORT);
-		
 	}
 
 	/**

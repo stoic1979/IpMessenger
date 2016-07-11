@@ -10,5 +10,7 @@ public class Config {
 
 	public static int UDP_PORT = 5005;
 	
+	public static int TCP_PORT = 5006;
+	
 	
 }//Config
