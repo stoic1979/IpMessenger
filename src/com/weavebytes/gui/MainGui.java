@@ -13,6 +13,7 @@ import java.util.Vector;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -260,6 +261,7 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		if(msg.startsWith("IAI")) processIAI(msg.substring(3));	
 		if(msg.startsWith("MTI")) processMTI(msg.substring(3));	
 		if(msg.startsWith("TCM")) processTCM(msg.substring(3));	
+		if(msg.startsWith("SFR")) processSFR(msg.substring(3));	
 	}
 
 	/**
@@ -325,6 +327,30 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		vct.addElement(otherHost + ": " + otherMsg);
 		if(userList.getSelectedValue().equals(otherHost)) taMsgs.append(otherHost + ": " + otherMsg + "\n");
 	}
+	
+	private void processSFR(String msg) {
+		
+		String l[] = msg.split("\\:");
+		
+		String otherHost = l[0];
+		String filePath = l[1];
+		
+		JDialog.setDefaultLookAndFeelDecorated(true);
+	    int response = JOptionPane.showConfirmDialog(null, 
+	    		"Do you want to receive file from " + otherHost + " ?",
+	    		"Receive File",
+	            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+	    
+	    if (response == JOptionPane.NO_OPTION) {
+	      System.out.println("No button clicked");
+	    } else if (response == JOptionPane.YES_OPTION) {
+	      System.out.println("Yes button clicked");
+	    } else if (response == JOptionPane.CLOSED_OPTION) {
+	      System.out.println("JOptionPane closed");
+	    }
+		
+		
+	}
 
 	/**
 	 * function sends a chat message to selected user on left side
@@ -368,7 +394,7 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
            System.out.println("getCurrentDirectory(): " + fileChooser.getCurrentDirectory());
            System.out.println("getSelectedFile() : " + fileChooser.getSelectedFile());
            
-           String fullPath = fileChooser.getCurrentDirectory() + File.separator + fileChooser.getSelectedFile();
+           String fullPath = fileChooser.getSelectedFile().toString();
            
            Utils.sendUdpMsg("SFR" + myHost + "::" + fullPath, otherIP, Config.UDP_PORT);	
         }
