@@ -4,6 +4,7 @@ import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 
 import com.weavebytes.config.Config;
@@ -12,17 +13,14 @@ import com.weavebytes.config.Config;
 public class ReceiveFileThread  extends Thread {
 
 	private String filePath;
-	private String otherIP;
-
 
 	/**
 	 * constructor
 	 * 
 	 * @param filePath
 	 */
-	public ReceiveFileThread(String filePath, String otherIP) {
+	public ReceiveFileThread(String filePath) {
 		this.filePath = filePath;
-		this.otherIP = otherIP;
 	}
 
 	/**
@@ -33,7 +31,10 @@ public class ReceiveFileThread  extends Thread {
 		System.out.println("[ReceiveFileThread] :: started... ");
 
 		try {
-			Socket socket = new Socket(InetAddress.getByName(otherIP), Config.TCP_PORT);
+			
+			ServerSocket ssock = new ServerSocket(Config.TCP_PORT);
+			Socket socket = ssock.accept();
+			
 			byte[] contents = new byte[10000];
 
 			//Initialize the FileOutputStream to the output file's full path.
@@ -49,6 +50,7 @@ public class ReceiveFileThread  extends Thread {
 
 			bos.flush(); 
 			socket.close();
+			ssock.close();
 		} catch(Exception e) {
 			System.out.println("[ReceiveFileThread] exception :: " + e);
 			e.printStackTrace();

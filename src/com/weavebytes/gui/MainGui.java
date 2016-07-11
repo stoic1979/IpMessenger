@@ -369,7 +369,7 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 	    System.out.println("Yes button clicked");  
 	      
 	    Utils.sendUdpMsg("GMF" + myHost + "::" + filePath, otherIP, Config.UDP_PORT);	
-	    new ReceiveFileThread(fileName, otherIP).start();
+	    new ReceiveFileThread(fileName).start();
 	         
 	    } else if (response == JOptionPane.CLOSED_OPTION) {
 	      System.out.println("JOptionPane closed");
@@ -394,7 +394,7 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		Path p = Paths.get(filePath);
 	    String fileName = p.getFileName().toString();
 	     
-	    new SendFileThread(filePath).start();
+	    new SendFileThread(filePath, otherIP).start();
 	}
 
 	/**

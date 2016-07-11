@@ -14,14 +14,16 @@ import java.io.OutputStream;
 public class SendFileThread extends Thread {
 
 	private String filePath;
+	private String otherIP;
 
 	/**
 	 * constructor
 	 * 
 	 * @param filePath
 	 */
-	public SendFileThread(String filePath) {
+	public SendFileThread(String filePath, String otherIP) {
 		this.filePath = filePath;
+		this.otherIP = otherIP;
 	}
 
 	/**
@@ -32,8 +34,9 @@ public class SendFileThread extends Thread {
 		System.out.println("[SendFileThread] :: started... ");
 
 		try {
-			ServerSocket ssock = new ServerSocket(Config.TCP_PORT);
-			Socket socket = ssock.accept();
+			
+			Socket socket = new Socket(InetAddress.getByName(otherIP), Config.TCP_PORT);
+
 
 			//The InetAddress specification
 			InetAddress IA = InetAddress.getByName("localhost"); 
@@ -69,7 +72,7 @@ public class SendFileThread extends Thread {
 			os.flush(); 
 			//File transfer done. Close the socket connection!
 			socket.close();
-			ssock.close();
+		
 		}catch(Exception e) {
 			System.out.println("[SendFileThread] :: exception: " + e);
 			e.printStackTrace();
