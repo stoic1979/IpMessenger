@@ -229,7 +229,7 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		
 		Utils.sendUdpMsg("MTI" + myIP + ":" + myHost , otherIP, Config.UDP_PORT);
 		
-		if(!htblUsers.contains(otherHost)) {
+		if(!htblUsers.containsKey(otherHost)) {
 			htblUsers.put(otherHost, otherIP);
 			model.addElement(otherHost);
 		}
@@ -250,7 +250,7 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		String otherIP   = l[0];
 		String otherHost = l[1];	
 		
-		if(!htblUsers.contains(otherHost)) {
+		if(!htblUsers.containsKey(otherHost)) {
 			htblUsers.put(otherHost, otherIP);
 			model.addElement(otherHost);
 		}
