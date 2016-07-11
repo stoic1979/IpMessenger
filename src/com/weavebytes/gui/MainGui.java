@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.Hashtable;
+import java.util.Vector;
 
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -36,7 +37,7 @@ import com.weavebytes.utils.Utils;
 public class MainGui extends JFrame implements WindowListener, ActionListener, Runnable{
 
 	JTextField tfSendMsg;
-	
+	JTextArea taMsgs;
 	private JList 						userList;
 	private DefaultListModel 			model;  
     private String 						myIP;
@@ -44,6 +45,7 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
     private boolean 					stopped = false;
     private Thread 						thrdMsgReceiver;
 	private Hashtable <String, String>  htblUsers = new Hashtable <String, String>();
+	private Hashtable <String, Vector<String>>  htblMessages = new Hashtable <String, Vector<String>>();
 	
     /**
      * constructor
@@ -84,8 +86,8 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 	    btnSend.setActionCommand("Send");
 	    btnSend.addActionListener(this);
 	    
-	    tfSendMsg       = new JTextField("send msg");
-	    JTextArea taMsgs           = new JTextArea("some messages");
+	    tfSendMsg       = new JTextField();
+	    taMsgs           = new JTextArea();
 	    JScrollPane msgsScrollPane = new JScrollPane(taMsgs);
 	    
 	    pnlCenterBottom.add(tfSendMsg, BorderLayout.CENTER);
@@ -258,17 +260,52 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		}
 	}
 	
+	/**
+	 * funciton process a "Text Chat Message"
+	 * 
+	 * @param msg
+	 */
 	private void processTCM(String msg) {
 		System.out.println("Got TCM=" + msg);
+		
+		String l[] = msg.split("\\:");
+		
+		String otherHost = l[0];
+		String otherMsg = l[1];
+		
+		
+		if(!htblMessages.containsKey(otherHost)) {
+			Vector<String> vctMsgList = new Vector<String>();
+			htblMessages.put(otherHost, vctMsgList);
+		}
+		
+		Vector<String> vct = htblMessages.get(otherHost);
+		vct.addElement(otherHost + ": " + otherMsg);
+		if(userList.getSelectedValue().equals(otherHost)) taMsgs.append(otherHost + ": " + otherMsg + "\n");
+		
 	}
 	
 	
 	private void sendClicked() {
 		System.out.println("Sending message");
 		
-		String otherIP = htblUsers.get( userList.getSelectedValue() );
+		String otherHost = userList.getSelectedValue().toString();
 		
-		Utils.sendUdpMsg("TCM" + myHost + ":" + tfSendMsg.getText(), otherIP, Config.UDP_PORT);
+		String otherIP = htblUsers.get(otherHost );
+		
+		String msg = tfSendMsg.getText();
+		
+		Utils.sendUdpMsg("TCM" + myHost + ":" + msg, otherIP, Config.UDP_PORT);
+		
+		
+		if(!htblMessages.containsKey(otherHost)) {
+			Vector<String> vctMsgList = new Vector<String>();
+			htblMessages.put(otherHost, vctMsgList);
+		}
+		
+		Vector<String> vct = htblMessages.get(otherHost);
+		vct.addElement(myHost + ": " + msg);
+		taMsgs.append(myHost + ": " + msg + "\n");
 	}
 	
 	private void refreshClicked() {
