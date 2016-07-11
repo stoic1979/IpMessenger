@@ -44,127 +44,127 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 	private JTextField                  tfSendMsg;
 	private JTextArea                   taMsgs;
 	private JList 						userList;
-	
+
 	/**
 	 * model to store string name of all hosts, 
 	 * to be shown on list in left side
 	 */
 	private DefaultListModel model;  
-    
+
 	/**
 	 * IP of this user
 	 */
 	private String 	myIP;
-	
+
 	/**
 	 * host of this user
 	 */
-    private String 	myHost;
-     
-    /**
-     * thread for receiving UDP messages
-     */
-    private Thread thrdMsgReceiver;
-    
-    /**
-     * flag to stop thread for receiving UDP messages
-     */
-    private boolean	stopped = false;
-    
-    /**
-     * hashtable to store a <host,ip> combination
-     */
-	private Hashtable <String, String>  htblUsers = new Hashtable <String, String>();
-	
+	private String 	myHost;
+
 	/**
-     * hashtable to store a <host, message-list> combination
-     */
+	 * thread for receiving UDP messages
+	 */
+	private Thread thrdMsgReceiver;
+
+	/**
+	 * flag to stop thread for receiving UDP messages
+	 */
+	private boolean	stopped = false;
+
+	/**
+	 * hashtable to store a <host,ip> combination
+	 */
+	private Hashtable <String, String>  htblUsers = new Hashtable <String, String>();
+
+	/**
+	 * hashtable to store a <host, message-list> combination
+	 */
 	private Hashtable <String, Vector<String>>  htblMessages = new Hashtable <String, Vector<String>>();
-	
-    /**
-     * constructor
-     */
+
+	/**
+	 * constructor
+	 */
 	public MainGui() {
 		super("IP Messenger");
 
-	    addWindowListener(this);
-	    
-	    initGui();	
-	    initMessenger();
+		addWindowListener(this);
+
+		initGui();	
+		initMessenger();
 	}
-	
+
 	/**
 	 * function initializes various GUI components
 	 */
 	private void initGui() {
-		
+
 		setLayout(new BorderLayout(5,5));
-		
+
 		// top toolbar....................................
 		JToolBar toolbar = new JToolBar();
-	    toolbar.setFloatable(false);
-	    
-	    JButton btnRefresh = new JButton("Refresh");
-	    btnRefresh.setActionCommand("Refresh");
-	    btnRefresh.addActionListener(this);
-	    toolbar.add(btnRefresh);
-	   
-	    // center panel....................................
-	    JPanel pnlCenter = new JPanel();
-	    pnlCenter.setLayout(new BorderLayout(5,5));
-	   
-	    JPanel pnlCenterBottom = new JPanel();
-	    pnlCenterBottom.setLayout(new BorderLayout(5,5));
-	    
-	    JButton btnSend = new JButton("Send");
-	    btnSend.setActionCommand("Send");
-	    btnSend.addActionListener(this);
-	    
-	    tfSendMsg       = new JTextField();
-	    taMsgs           = new JTextArea();
-	    JScrollPane msgsScrollPane = new JScrollPane(taMsgs);
-	    
-	    pnlCenterBottom.add(tfSendMsg, BorderLayout.CENTER);
-	    pnlCenterBottom.add(btnSend,   BorderLayout.EAST);
-	    pnlCenter.add(msgsScrollPane,  BorderLayout.CENTER);
-	    pnlCenter.add(pnlCenterBottom, BorderLayout.SOUTH);
-		
+		toolbar.setFloatable(false);
+
+		JButton btnRefresh = new JButton("Refresh");
+		btnRefresh.setActionCommand("Refresh");
+		btnRefresh.addActionListener(this);
+		toolbar.add(btnRefresh);
+
+		// center panel....................................
+		JPanel pnlCenter = new JPanel();
+		pnlCenter.setLayout(new BorderLayout(5,5));
+
+		JPanel pnlCenterBottom = new JPanel();
+		pnlCenterBottom.setLayout(new BorderLayout(5,5));
+
+		JButton btnSend = new JButton("Send");
+		btnSend.setActionCommand("Send");
+		btnSend.addActionListener(this);
+
+		tfSendMsg       = new JTextField();
+		taMsgs           = new JTextArea();
+		JScrollPane msgsScrollPane = new JScrollPane(taMsgs);
+
+		pnlCenterBottom.add(tfSendMsg, BorderLayout.CENTER);
+		pnlCenterBottom.add(btnSend,   BorderLayout.EAST);
+		pnlCenter.add(msgsScrollPane,  BorderLayout.CENTER);
+		pnlCenter.add(pnlCenterBottom, BorderLayout.SOUTH);
+
 		model    = new DefaultListModel();
 		userList = new JList(model);
 		userList.addListSelectionListener(this);
 
-	    JScrollPane userListScrollPane = new JScrollPane(userList);
-    
-	    // bottom...........................................
-	    JLabel statusbar = new JLabel(" Statusbar");
-	    
-	    
-	    // right............................................
-	    JLabel right = new JLabel(" right side ");
+		JScrollPane userListScrollPane = new JScrollPane(userList);
 
-	    
-	    add(toolbar,            BorderLayout.NORTH);
-	    add(userListScrollPane, BorderLayout.WEST);
-	    add(pnlCenter,          BorderLayout.CENTER);
-	    add(right, 	            BorderLayout.EAST);
-	    add(statusbar,          BorderLayout.SOUTH);
-	    pack();
-	    
-	    setSize(720, 640);
-	    setVisible(true);
-	    
+		// bottom...........................................
+		JLabel statusbar = new JLabel(" Statusbar");
+
+
+		// right............................................
+		JLabel right = new JLabel(" right side ");
+
+
+		add(toolbar,            BorderLayout.NORTH);
+		add(userListScrollPane, BorderLayout.WEST);
+		add(pnlCenter,          BorderLayout.CENTER);
+		add(right, 	            BorderLayout.EAST);
+		add(statusbar,          BorderLayout.SOUTH);
+		pack();
+
+		setSize(720, 640);
+		setVisible(true);
+
 	}
-	
-	
+
+	/**
+	 ********************************************************************
+	 * 
+	 *                       MAIN 
+	 *
+	 *********************************************************************                   
+	 */
 	public static void main(String[] args) {
-	  new MainGui();
-
+		new MainGui();
 	}
-
-
-	@Override
-	public void windowOpened(java.awt.event.WindowEvent e) {}
-
 
 	@Override
 	public void windowClosing(java.awt.event.WindowEvent e) {
@@ -174,30 +174,22 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 				JOptionPane.OK_OPTION, 0, new ImageIcon("")) != 0) {
             return;
         }*/
-        System.exit(-1);
-		
+		System.exit(-1);
+
 	}
 
-
+	@Override
+	public void windowOpened(java.awt.event.WindowEvent e) {}
 	@Override
 	public void windowClosed(java.awt.event.WindowEvent e) {}
-
-
 	@Override
 	public void windowIconified(java.awt.event.WindowEvent e) {}
-
-
 	@Override
 	public void windowDeiconified(java.awt.event.WindowEvent e) {}
-
-
 	@Override
 	public void windowActivated(java.awt.event.WindowEvent e) {}
-
-
 	@Override
 	public void windowDeactivated(java.awt.event.WindowEvent e) {}
-
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -209,37 +201,36 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 			refreshClicked();	
 		}
 	}
-	
+
 	/**
 	 * thread for listening all incoming UDP messages
 	 * on port Config.UDP_PORT
 	 */
 	public void run() {
-	    byte[] buffer = new byte[65507];
-	    DatagramSocket socket;
-	    try {
-	     socket = new DatagramSocket(Config.UDP_PORT);
-	   
-	    
-	    while (true) {
-	      if (stopped)
-	        return;
-	      DatagramPacket dp = new DatagramPacket(buffer, buffer.length);
-	      try {
-	        socket.receive(dp);
-	        String s = new String(dp.getData(), 0, dp.getLength());
-	        System.out.println("Got msg: " + s);
-	        processMessage(s);
-	        Thread.yield();
-	      } catch (IOException ex) {
-	        System.err.println(ex);
-	      }
-	    }//while
-	    	} catch(Exception e) {
-	    	
-	    }
-	  }
-	
+		byte[] buffer = new byte[65507];
+		DatagramSocket socket;
+		try {
+			socket = new DatagramSocket(Config.UDP_PORT);
+
+			while (true) {
+				if (stopped)
+					return;
+				DatagramPacket dp = new DatagramPacket(buffer, buffer.length);
+				try {
+					socket.receive(dp);
+					String s = new String(dp.getData(), 0, dp.getLength());
+					System.out.println("Got msg: " + s);
+					processMessage(s);
+					Thread.yield();
+				} catch (IOException ex) {
+					System.err.println(ex);
+				}
+			}//while
+		} catch(Exception e) {
+
+		}
+	}
+
 	/**
 	 * function process messages received
 	 * 
@@ -250,7 +241,7 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		if(msg.startsWith("MTI")) processMTI(msg.substring(3));	
 		if(msg.startsWith("TCM")) processTCM(msg.substring(3));	
 	}
-	
+
 	/**
 	 * function process an "I Am In" message
 	 * 
@@ -258,93 +249,87 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 	 */
 	private void processIAI(String msg) {
 		System.out.println("Got IAI=" + msg);
-		
+
 		String l[] = msg.split("\\:");
-	
+
 		String otherIP   = l[0];
 		String otherHost = l[1];	
-		
-		
-		
+
 		Utils.sendUdpMsg("MTI" + myIP + ":" + myHost , otherIP, Config.UDP_PORT);
-		
+
 		if(!htblUsers.containsKey(otherHost)) {
 			htblUsers.put(otherHost, otherIP);
 			model.addElement(otherHost);
 		}
-		
 	}
-	
+
 	/**
 	 * function process an "Me Too In" message
 	 * 
 	 * @param msg
 	 */
 	private void processMTI(String msg) {
-		
+
 		System.out.println("Got MTI=" + msg);
-		
+
 		String l[] = msg.split("\\:");
-	
+
 		String otherIP   = l[0];
 		String otherHost = l[1];	
-		
+
 		if(!htblUsers.containsKey(otherHost)) {
 			htblUsers.put(otherHost, otherIP);
 			model.addElement(otherHost);
 		}
 	}
-	
+
 	/**
-	 * funciton process a "Text Chat Message"
+	 * function process a "Text Chat Message"
 	 * 
 	 * @param msg
 	 */
 	private void processTCM(String msg) {
 		System.out.println("Got TCM=" + msg);
-		
+
 		String l[] = msg.split("\\:");
-		
+
 		String otherHost = l[0];
 		String otherMsg = l[1];
-		
-		
+
 		if(!htblMessages.containsKey(otherHost)) {
 			Vector<String> vctMsgList = new Vector<String>();
 			htblMessages.put(otherHost, vctMsgList);
 		}
-		
+
 		Vector<String> vct = htblMessages.get(otherHost);
 		vct.addElement(otherHost + ": " + otherMsg);
 		if(userList.getSelectedValue().equals(otherHost)) taMsgs.append(otherHost + ": " + otherMsg + "\n");
-		
 	}
-	
+
 	/**
 	 * function sends a chat message to selected user on left side
 	 */
 	private void sendClicked() {
 		String otherHost = userList.getSelectedValue().toString();
-		
+
 		String otherIP = htblUsers.get(otherHost );
-		
+
 		String msg = tfSendMsg.getText();
-		
-		Utils.sendUdpMsg("TCM" + myHost + ":" + msg, otherIP, Config.UDP_PORT);
-		
-		
+
+		Utils.sendUdpMsg("TCM" + myHost + ":" + msg, otherIP, Config.UDP_PORT);	
+
 		if(!htblMessages.containsKey(otherHost)) {
 			Vector<String> vctMsgList = new Vector<String>();
 			htblMessages.put(otherHost, vctMsgList);
 		}
-		
+
 		Vector<String> vct = htblMessages.get(otherHost);
 		vct.addElement(myHost + ": " + msg);
 		taMsgs.append(myHost + ": " + msg + "\n");
-		
+
 		tfSendMsg.setText("");
 	}
-	
+
 	/**
 	 * function sends IAI to all users in n/w
 	 * will cause user list to be refreshed on left side
@@ -354,7 +339,7 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		System.out.println("handle refresh: " + Utils.getHost());
 		Utils.sendUdpBroadcast("IAI" + myIP + ":" + myHost, Config.UDP_PORT);
 	}
-	
+
 	/**
 	 * function initializes the messenger with ip, host,
 	 * UDP msg listener thread etc.
@@ -370,21 +355,19 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
 		System.out.println("valueChanged: " + userList.getSelectedValue());
-		
+
 		taMsgs.setText("");
-		
+
 		String otherHost = userList.getSelectedValue().toString();
-		
+
 		if(!htblMessages.containsKey(otherHost) ) return;
-		
+
 		Vector<String> msgList = htblMessages.get(otherHost);
-		for(int i=0; i<msgList.size(); i++) {
-			
+		for(int i=0; i < msgList.size(); i++) {
+
 			String msg = msgList.elementAt(i).toString();
 			taMsgs.setText(taMsgs.getText() + msg + "\n");
-		}
-		
+		}	
 	}
-	
-	
+
 }//MainGui
