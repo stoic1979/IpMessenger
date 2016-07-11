@@ -127,8 +127,8 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		btnSend.setActionCommand("Send");
 		btnSend.addActionListener(this);
 
-		tfSendMsg       = new JTextField();
-		taMsgs           = new JTextArea();
+		tfSendMsg = new JTextField();
+		taMsgs    = new JTextArea();
 		JScrollPane msgsScrollPane = new JScrollPane(taMsgs);
 
 		pnlCenterBottom.add(tfSendMsg, BorderLayout.CENTER);
@@ -156,7 +156,8 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		btnSendFile.addActionListener(this);
 		pnlRight.add(btnSendFile);
 
-
+		
+		// Adding GUI components
 		add(toolbar,            BorderLayout.NORTH);
 		add(userListScrollPane, BorderLayout.WEST);
 		add(pnlCenter,          BorderLayout.CENTER);
@@ -164,6 +165,7 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		add(statusbar,          BorderLayout.SOUTH);
 		pack();
 
+		// Size & Visibility
 		setSize(720, 640);
 		setExtendedState(java.awt.Frame.MAXIMIZED_BOTH);
 		setVisible(true);
