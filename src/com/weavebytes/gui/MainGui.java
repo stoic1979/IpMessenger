@@ -314,6 +314,7 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 	
 	private void refreshClicked() {
 		System.out.println("handle refresh: " + Utils.getHost());
+		Utils.sendUdpBroadcast("IAI" + myIP + ":" + myHost, Config.UDP_PORT);
 	}
 	
 	/**
