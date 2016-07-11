@@ -23,6 +23,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 
+import com.weavebytes.config.Config;
 import com.weavebytes.utils.Utils;
 
 /**
@@ -37,8 +38,8 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 	private JList userList;
 	private DefaultListModel model;
     
-    private String IP;
-    private String host;
+    private String myIP;
+    private String myHost;
     
     boolean stopped = false;
 	
@@ -178,13 +179,13 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 	
 	/**
 	 * thread for listening all incoming UDP messages
-	 * on port 5005
+	 * on port Config.UDP_PORT
 	 */
 	public void run() {
 	    byte[] buffer = new byte[65507];
 	    DatagramSocket socket;
 	    try {
-	     socket = new DatagramSocket(5005);
+	     socket = new DatagramSocket(Config.UDP_PORT);
 	   
 	    
 	    while (true) {
@@ -217,6 +218,16 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 	
 	private void processIAI(String msg) {
 		System.out.println("Got IAI=" + msg);
+		
+		String l[] = msg.split("\\:");
+	
+		String otherIp= l[0];
+		String otherHost = l[1];	
+		
+		model.addElement(otherHost);
+		
+		Utils.sendUdpMsg("MTI" + myIP + ":" + myHost , otherIp, Config.UDP_PORT);
+		
 	}
 	
 	private void processMTI(String msg) {
@@ -226,7 +237,7 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 	
 	private void sendClicked() {
 		System.out.println("Sending message");
-		Utils.sendUdpBroadcast("IAIhello", 5005);
+		Utils.sendUdpBroadcast("IAIhello", Config.UDP_PORT);
 	}
 	
 	private void refreshClicked() {
@@ -238,11 +249,11 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 	 * UDP msg listener thread etc.
 	 */
 	private void initMessenger() {
-		IP = Utils.getIP();
-		host = Utils.getHost();
+		myIP = Utils.getIP();
+		myHost = Utils.getHost();
 		thrdMsgReceiver = new Thread(this);
 		thrdMsgReceiver.start();
-		Utils.sendUdpBroadcast("IAI" + IP + ":" + host, 5005);
+		Utils.sendUdpBroadcast("IAI" + myIP + ":" + myHost, Config.UDP_PORT);
 	}
 	
 	

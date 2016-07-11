@@ -64,15 +64,14 @@ public class Utils {
 	}
 	
 	public static void sendUdpBroadcast(String msg, int port) {
-		
-		for(int i=2; i<255; i++) {
-			
+		for(int i=2; i<255; i++) {	
 			String ip = getIpPrefix(getIP()) + i;
-			//System.out.println(ip + " ==> " + msg);
+			
+			// dont send my msg to me !!!
+			if(ip.equals(getIP())) continue;
+			
 			sendUdpMsg(msg, ip, port);
 		}
-		
-		
 	}
 	
 	public static void sendUdpMsg(String msg, String ip, int port) {
