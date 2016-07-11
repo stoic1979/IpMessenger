@@ -13,6 +13,7 @@ import java.util.Vector;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -26,6 +27,8 @@ import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+
+import java.io.File;
 
 import com.weavebytes.config.Config;
 import com.weavebytes.utils.Utils;
@@ -100,7 +103,9 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 
 		setLayout(new BorderLayout(5,5));
 
-		// top toolbar....................................
+		//---------------------------------------------------------
+		// TOP
+		//---------------------------------------------------------
 		JToolBar toolbar = new JToolBar();
 		toolbar.setFloatable(false);
 
@@ -109,7 +114,9 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		btnRefresh.addActionListener(this);
 		toolbar.add(btnRefresh);
 
-		// center panel....................................
+		//---------------------------------------------------------
+		// CENTER
+		//---------------------------------------------------------
 		JPanel pnlCenter = new JPanel();
 		pnlCenter.setLayout(new BorderLayout(5,5));
 
@@ -134,26 +141,32 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		userList.addListSelectionListener(this);
 
 		JScrollPane userListScrollPane = new JScrollPane(userList);
-
-		// bottom...........................................
+		
+		//---------------------------------------------------------
+		// BOTTOM
+		//---------------------------------------------------------
 		JLabel statusbar = new JLabel(" Statusbar");
-
-
-		// right............................................
-		JLabel right = new JLabel(" right side ");
+		
+		//---------------------------------------------------------
+		// RIGHT
+		//---------------------------------------------------------
+		JPanel pnlRight = new JPanel();
+		JButton btnSendFile = new JButton("Send File");
+		btnSendFile.setActionCommand("Send File");
+		btnSendFile.addActionListener(this);
+		pnlRight.add(btnSendFile);
 
 
 		add(toolbar,            BorderLayout.NORTH);
 		add(userListScrollPane, BorderLayout.WEST);
 		add(pnlCenter,          BorderLayout.CENTER);
-		add(right, 	            BorderLayout.EAST);
+		add(pnlRight, 	            BorderLayout.EAST);
 		add(statusbar,          BorderLayout.SOUTH);
 		pack();
 
 		setSize(720, 640);
 		setExtendedState(java.awt.Frame.MAXIMIZED_BOTH);
 		setVisible(true);
-
 	}
 
 	/**
@@ -200,6 +213,10 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		}
 		if(e.getActionCommand().equals("Refresh")) {
 			refreshClicked();	
+		}
+		
+		if(e.getActionCommand().equals("Send File")) {
+			sendFile();	
 		}
 	}
 
@@ -330,6 +347,19 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 
 		tfSendMsg.setText("");
 	}
+	
+	private void sendFile() {
+		
+		JFileChooser fileChooser = new JFileChooser();
+        int returnValue = fileChooser.showOpenDialog(null);
+        
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+          File selectedFile = fileChooser.getSelectedFile();
+          System.out.println(selectedFile.getName());
+           System.out.println("getCurrentDirectory(): " + fileChooser.getCurrentDirectory());
+           System.out.println("getSelectedFile() : " + fileChooser.getSelectedFile());
+        }
+	}
 
 	/**
 	 * function sends IAI to all users in n/w
@@ -339,6 +369,7 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 	private void refreshClicked() {
 		System.out.println("handle refresh: " + Utils.getHost());
 		Utils.sendUdpBroadcast("IAI" + myIP + ":" + myHost, Config.UDP_PORT);
+		
 	}
 
 	/**
