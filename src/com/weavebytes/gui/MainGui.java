@@ -1,7 +1,8 @@
 package com.weavebytes.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowListener;
 
 import javax.swing.DefaultListModel;
@@ -18,17 +19,19 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 
-import javafx.geometry.Insets;
+import com.weavebytes.utils.Utils;
 
-public class MainGui extends JFrame implements WindowListener{
+
+public class MainGui extends JFrame implements WindowListener, ActionListener{
 
 	
 	private JList userList;
 	private DefaultListModel model;
     private int counter = 15;
+    
+    private String IP;
+    private String host;
 	
 	
 	public MainGui() {
@@ -37,6 +40,7 @@ public class MainGui extends JFrame implements WindowListener{
 	    addWindowListener(this);
 	    
 	    initGui();	
+	    initMessenger();
 	}
 	
 	
@@ -49,6 +53,8 @@ public class MainGui extends JFrame implements WindowListener{
 	    toolbar.setFloatable(false);
 	    
 	    JButton btnRefresh = new JButton("Refresh");
+	    btnRefresh.setActionCommand("Refresh");
+	    btnRefresh.addActionListener(this);
 	    toolbar.add(btnRefresh);
 	   
 	    // center panel....................................
@@ -57,7 +63,11 @@ public class MainGui extends JFrame implements WindowListener{
 	   
 	    JPanel pnlCenterBottom = new JPanel();
 	    pnlCenterBottom.setLayout(new BorderLayout(5,5));
+	    
 	    JButton btnSend = new JButton("Send");
+	    btnSend.setActionCommand("Send");
+	    btnSend.addActionListener(this);
+	    
 	    JTextField tfSendMsg = new JTextField("send msg");
 	    JTextArea taMsgs = new JTextArea("some messages");
 	    JScrollPane msgsScrollPane = new JScrollPane(taMsgs);
@@ -137,4 +147,34 @@ public class MainGui extends JFrame implements WindowListener{
 	@Override
 	public void windowDeactivated(java.awt.event.WindowEvent e) {
 	}
+
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		System.out.println("Pressed: " + e.getActionCommand());
+		if(e.getActionCommand().equals("Send")) {
+			handleSendMessage();	
+		}
+		if(e.getActionCommand().equals("Refresh")) {
+			handleRefresh();	
+		}
+		
+	}
+	
+	
+	private void handleSendMessage() {
+		System.out.println("Sending message");
+		Utils.sendUdpBroadcast("hello", 5005);
+	}
+	
+	private void handleRefresh() {
+		System.out.println("handle refresh: " + Utils.getHost());
+	}
+	
+	private void initMessenger() {
+		IP = Utils.getIP();
+		host = Utils.getHost();
+	}
+	
+	
 }//MainGui
