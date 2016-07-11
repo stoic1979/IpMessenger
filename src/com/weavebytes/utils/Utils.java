@@ -68,7 +68,7 @@ public class Utils {
 		for(int i=2; i<255; i++) {
 			
 			String ip = getIpPrefix(getIP()) + i;
-			System.out.println(ip + " ==> " + msg);
+			//System.out.println(ip + " ==> " + msg);
 			sendUdpMsg(msg, ip, port);
 		}
 		
@@ -83,8 +83,6 @@ public class Utils {
 	      // Initialize a datagram packet with data and address
 	      DatagramPacket packet = new DatagramPacket(msg.getBytes(), msg.length(), address, port);
 
-	      
-	      
 	      // Create a datagram socket, send the packet through it, close it.
 	      DatagramSocket dsocket = new DatagramSocket();
 	      dsocket.send(packet);

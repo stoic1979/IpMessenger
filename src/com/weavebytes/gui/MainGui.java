@@ -4,6 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowListener;
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -22,18 +25,28 @@ import javax.swing.JToolBar;
 
 import com.weavebytes.utils.Utils;
 
-
-public class MainGui extends JFrame implements WindowListener, ActionListener{
+/**
+ * Main GUI class of IP Messenger
+ * 
+ * @author weavebytes
+ *
+ */
+public class MainGui extends JFrame implements WindowListener, ActionListener, Runnable{
 
 	
 	private JList userList;
 	private DefaultListModel model;
-    private int counter = 15;
     
     private String IP;
     private String host;
+    
+    boolean stopped = false;
 	
+    Thread thrdMsgReceiver;
 	
+    /**
+     * constructor
+     */
 	public MainGui() {
 		super("IP Messenger");
 
@@ -43,7 +56,9 @@ public class MainGui extends JFrame implements WindowListener, ActionListener{
 	    initMessenger();
 	}
 	
-	
+	/**
+	 * function initializes various GUI components
+	 */
 	private void initGui() {
 		
 		setLayout(new BorderLayout(5,5));
@@ -80,7 +95,7 @@ public class MainGui extends JFrame implements WindowListener, ActionListener{
 		model = new DefaultListModel();
 		userList = new JList(model);
 	    JScrollPane userListScrollPane = new JScrollPane(userList);
-	    for (int i = 0; i < 150; i++)
+	    for (int i = 0; i < 10; i++)
 	        model.addElement("Element " + i);
 	    
 	    // bottom...........................................
@@ -153,27 +168,81 @@ public class MainGui extends JFrame implements WindowListener, ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		System.out.println("Pressed: " + e.getActionCommand());
 		if(e.getActionCommand().equals("Send")) {
-			handleSendMessage();	
+			sendClicked();	
 		}
 		if(e.getActionCommand().equals("Refresh")) {
-			handleRefresh();	
+			refreshClicked();	
 		}
 		
 	}
 	
-	
-	private void handleSendMessage() {
-		System.out.println("Sending message");
-		Utils.sendUdpBroadcast("hello", 5005);
+	/**
+	 * thread for listening all incoming UDP messages
+	 * on port 5005
+	 */
+	public void run() {
+	    byte[] buffer = new byte[65507];
+	    DatagramSocket socket;
+	    try {
+	     socket = new DatagramSocket(5005);
+	   
+	    
+	    while (true) {
+	      if (stopped)
+	        return;
+	      DatagramPacket dp = new DatagramPacket(buffer, buffer.length);
+	      try {
+	        socket.receive(dp);
+	        String s = new String(dp.getData(), 0, dp.getLength());
+	        System.out.println("Got msg: " + s);
+	        processMessage(s);
+	        Thread.yield();
+	      } catch (IOException ex) {
+	        System.err.println(ex);
+	      }
+	    }//while
+	    	} catch(Exception e) {
+	    	
+	    }
+	  }
+	/**
+	 * function process messages received
+	 * 
+	 * @param msg
+	 */
+	private void processMessage(String msg) {
+		if(msg.startsWith("IAI")) processIAI(msg.substring(3));	
+		if(msg.startsWith("MTI")) processMTI(msg.substring(3));	
 	}
 	
-	private void handleRefresh() {
+	private void processIAI(String msg) {
+		System.out.println("Got IAI=" + msg);
+	}
+	
+	private void processMTI(String msg) {
+		System.out.println("Got IAI=" + msg);
+	}
+	
+	
+	private void sendClicked() {
+		System.out.println("Sending message");
+		Utils.sendUdpBroadcast("IAIhello", 5005);
+	}
+	
+	private void refreshClicked() {
 		System.out.println("handle refresh: " + Utils.getHost());
 	}
 	
+	/**
+	 * function initializes the messenger with ip, host,
+	 * UDP msg listener thread etc.
+	 */
 	private void initMessenger() {
 		IP = Utils.getIP();
 		host = Utils.getHost();
+		thrdMsgReceiver = new Thread(this);
+		thrdMsgReceiver.start();
+		Utils.sendUdpBroadcast("IAI" + IP + ":" + host, 5005);
 	}
 	
 	
