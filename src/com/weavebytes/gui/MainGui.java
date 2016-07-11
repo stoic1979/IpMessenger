@@ -7,6 +7,8 @@ import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -330,21 +332,34 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 	
 	private void processSFR(String msg) {
 		
-		String l[] = msg.split("\\:");
+		String l[] = msg.split("\\::");
 		
 		String otherHost = l[0];
 		String filePath = l[1];
 		
+		Path p = Paths.get(filePath);
+	     String fileName = p.getFileName().toString();
+		
+	     System.out.println("filePath = " + filePath);
+	     System.out.println("fileName = " + fileName);
+	     
+	     
 		JDialog.setDefaultLookAndFeelDecorated(true);
 	    int response = JOptionPane.showConfirmDialog(null, 
 	    		"Do you want to receive file from " + otherHost + " ?",
-	    		"Receive File",
+	    		"Receive File: " + fileName,
 	            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 	    
 	    if (response == JOptionPane.NO_OPTION) {
 	      System.out.println("No button clicked");
 	    } else if (response == JOptionPane.YES_OPTION) {
 	      System.out.println("Yes button clicked");
+	      
+	      
+	      
+	      
+	      
+	      
 	    } else if (response == JOptionPane.CLOSED_OPTION) {
 	      System.out.println("JOptionPane closed");
 	    }
