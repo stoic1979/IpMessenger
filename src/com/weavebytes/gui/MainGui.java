@@ -563,17 +563,27 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 	 */
 	private void processGMF(String msg) {
 		
+		try {
+		System.out.println("processing GMF");
+		
 		String l[] = msg.split("\\::");
 		
 		String otherHost = l[0];
-		String filePath = l[1];
-		int    port     = Integer.parseInt(l[2]);
+		String filePath = l[2];
+		int    port     = Integer.parseInt(l[1]);
 		String otherIP = htblUsers.get(otherHost);
 		
 		Path p = Paths.get(filePath);
 	    String fileName = p.getFileName().toString();
+	    
+	    System.out.println(String.format("+++ got otherHost=%s, filePath=%s, ip=%d, otherIP=%s", otherHost, filePath, port, otherIP));
+	    
 	     
 	    new SendFileThread(filePath, otherIP, port).start();
+		} catch(Exception e) {
+			System.out.println("processGMF exception ::" + e);
+			e.printStackTrace();
+		}
 	}
 
 	/**

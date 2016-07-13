@@ -23,6 +23,9 @@ public class SendFileThread extends Thread {
 	 * @param filePath
 	 */
 	public SendFileThread(String filePath, String otherIP, int port) {
+		
+		System.out.println("[SendFileThread] ()");
+		
 		this.filePath = filePath;
 		this.otherIP = otherIP;
 		this.port = port;
@@ -37,7 +40,7 @@ public class SendFileThread extends Thread {
 
 		try {
 					
-			Socket socket = new Socket(InetAddress.getByName(otherIP), Config.TCP_PORT);
+			Socket socket = new Socket(InetAddress.getByName(otherIP), port);
 
 
 			//The InetAddress specification
