@@ -431,6 +431,9 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		if(!htblUsers.containsKey(otherHost)) {
 			htblUsers.put(otherHost, otherIP);
 			model.addElement(otherHost);
+			
+			// by default select the first one, when list has only one user
+			if(model.size() == 1) userList.setSelectedIndex(0);
 		}
 	}
 
@@ -451,6 +454,9 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		if(!htblUsers.containsKey(otherHost)) {
 			htblUsers.put(otherHost, otherIP);
 			model.addElement(otherHost);
+			
+			// by default select the first one, when list has only one user
+			if(model.size() == 1) userList.setSelectedIndex(0);
 		}
 	}
 
