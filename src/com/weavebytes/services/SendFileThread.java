@@ -15,15 +15,17 @@ public class SendFileThread extends Thread {
 
 	private String filePath;
 	private String otherIP;
+	private int port;
 
 	/**
 	 * constructor
 	 * 
 	 * @param filePath
 	 */
-	public SendFileThread(String filePath, String otherIP) {
+	public SendFileThread(String filePath, String otherIP, int port) {
 		this.filePath = filePath;
 		this.otherIP = otherIP;
+		this.port = port;
 	}
 
 	/**
@@ -31,7 +33,7 @@ public class SendFileThread extends Thread {
 	 */
 	public void run() {
 		
-		System.out.println("[SendFileThread] :: started... ");
+		System.out.println("[SendFileThread] :: started at port " + port);
 
 		try {
 					

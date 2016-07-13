@@ -13,14 +13,15 @@ import com.weavebytes.config.Config;
 public class ReceiveFileThread  extends Thread {
 
 	private String filePath;
-
+    private int port;
 	/**
 	 * constructor
 	 * 
 	 * @param filePath
 	 */
-	public ReceiveFileThread(String filePath) {
+	public ReceiveFileThread(int port, String filePath) {
 		this.filePath = filePath;
+		this.port = port;
 	}
 
 	/**
@@ -28,11 +29,11 @@ public class ReceiveFileThread  extends Thread {
 	 */
 	public void run() {
 		
-		System.out.println("[ReceiveFileThread] :: started... ");
+		System.out.println("[ReceiveFileThread] :: started on port " + port);
 
 		try {
 			
-			ServerSocket ssock = new ServerSocket(Config.TCP_PORT);			
+			ServerSocket ssock = new ServerSocket(port);			
 			Socket socket = ssock.accept();
 			
 			byte[] contents = new byte[10000];

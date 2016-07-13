@@ -46,6 +46,8 @@ import com.weavebytes.services.ReceiveFileThread;
 import com.weavebytes.services.SendFileThread;
 import com.weavebytes.utils.Utils;
 
+import javafx.collections.ListChangeListener;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -285,6 +287,7 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 	 */
 	public static void main(String[] args) {
 		
+		/*
 		// You should work with UI (including installing L&F) inside Event Dispatch Thread (EDT)
         SwingUtilities.invokeLater ( new Runnable ()
         {
@@ -305,7 +308,7 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
                 // WebFrame frame = ...
             }
         } );
-		
+		*/
 		new MainGui();
 	}
 	
@@ -371,6 +374,9 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		}
 	}		
 
+	
+	
+	
 	/**
 	 * thread for listening all incoming UDP messages
 	 * on port Config.UDP_PORT
@@ -534,9 +540,12 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 	        
 	        String savePath = fileToSave.getAbsolutePath();
 	        System.out.println("Save as file: " + savePath);
-	           
-		    Utils.sendUdpMsg("GMF" + myHost + "::" + filePath, otherIP, Config.UDP_PORT);	
-		    new ReceiveFileThread(savePath).start();
+	        
+	        
+	        Config.TCP_PORT++;
+	        
+		    Utils.sendUdpMsg("GMF" + myHost + "::" + Config.TCP_PORT + "::" + filePath, otherIP, Config.UDP_PORT);	
+		    new ReceiveFileThread(Config.TCP_PORT, savePath).start();
 	    }
 	   
 	         
@@ -558,12 +567,13 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		
 		String otherHost = l[0];
 		String filePath = l[1];
+		int    port     = Integer.parseInt(l[2]);
 		String otherIP = htblUsers.get(otherHost);
 		
 		Path p = Paths.get(filePath);
 	    String fileName = p.getFileName().toString();
 	     
-	    new SendFileThread(filePath, otherIP).start();
+	    new SendFileThread(filePath, otherIP, port).start();
 	}
 
 	/**
