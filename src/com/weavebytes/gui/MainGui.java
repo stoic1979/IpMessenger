@@ -3,6 +3,8 @@ package com.weavebytes.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowListener;
@@ -24,6 +26,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -43,13 +46,16 @@ import com.weavebytes.services.ReceiveFileThread;
 import com.weavebytes.services.SendFileThread;
 import com.weavebytes.utils.Utils;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
 /**
  * Main GUI class of IP Messenger
  * 
  * @author weavebytes
  *
  */
-public class MainGui extends JFrame implements WindowListener, ActionListener, Runnable, ListSelectionListener{
+public class MainGui extends JFrame implements WindowListener, ActionListener, Runnable, ListSelectionListener, KeyListener{
 
 	/**
 	 * UI components
@@ -123,7 +129,9 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		JButton btnRefresh = new JButton("Refresh");
 		btnRefresh.setActionCommand("Refresh");
 		btnRefresh.addActionListener(this);
-		toolbar.add(btnRefresh);
+		btnRefresh.setLocation(100,200);
+		
+		//toolbar.add(btnRefresh);
 
 		//---------------------------------------------------------
 		// CENTER
@@ -140,6 +148,9 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 
 		tfSendMsg = new JTextField();
 		taMsgs    = new JTextArea();
+		
+		tfSendMsg.addKeyListener(this);
+		
 		JScrollPane msgsScrollPane = new JScrollPane(taMsgs);
 
 		pnlCenterBottom.add(tfSendMsg, BorderLayout.CENTER);
@@ -162,11 +173,93 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		// RIGHT
 		//---------------------------------------------------------
 		JPanel pnlRight = new JPanel();
+		pnlRight.setLayout(new GridLayout(20, 1));
 		JButton btnSendFile = new JButton("Send File");
 		btnSendFile.setActionCommand("Send File");
 		btnSendFile.addActionListener(this);
 		pnlRight.add(btnSendFile);
+		btnRefresh.setLocation(4,1);
+		
+		pnlRight.add(btnRefresh);
 
+
+		// Adding GUI components
+		add(toolbar,            BorderLayout.NORTH);
+		add(userListScrollPane, BorderLayout.WEST);
+		add(pnlCenter,          BorderLayout.CENTER);
+		add(pnlRight, 	            BorderLayout.EAST);
+		add(statusbar,          BorderLayout.SOUTH);
+		pack();
+
+		JMenuBar menuBar = new JMenuBar();
+		
+		 // File Menu, F - Mnemonic
+	    JMenu fileMenu = new JMenu("File");
+	    fileMenu.setMnemonic(KeyEvent.VK_F);
+	    
+	    JMenu settingsMenu = new JMenu("Settings");
+	    settingsMenu.setMnemonic(KeyEvent.VK_S);
+	    JMenu helpMenu = new JMenu("Help");	    	   
+	    JMenuItem exit = new JMenuItem("Exit", KeyEvent.VK_Q);	 
+	    
+	    exit.addActionListener(new ActionListener() {
+	    	
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.exit(-1);
+				
+			}
+		});
+	    
+	    //About dialog frame
+	    final JFrame aboutDialog = new JFrame("About Text Messenger..");
+	    aboutDialog.setSize(450, 600);  
+	    aboutDialog.setLocation(200, 100);
+	    
+	    JLabel aboutText = new JLabel();
+	    aboutText.setText("IP Messenger IP Messenger IP Messenger IP Messenger IP Messenger IP Messenger IP Messenger IP Messenger");
+	    aboutText.setSize(350, 600);
+	    
+	    aboutDialog.getContentPane().add(aboutText);
+	    
+	    JMenuItem hostSettings = new JMenuItem("Host Settings", KeyEvent.VK_H);	  
+	    
+	    //setting dialog frame
+	    final JFrame settings = new JFrame("Messenger Settings");
+	    settings.setSize(350, 500);  
+	    settings.setLocation(250, 100);
+	    
+	    hostSettings.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				settings.setVisible(true);				
+			}
+		});
+	    
+	    JMenuItem about = new JMenuItem("About");	    
+	    about.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+			aboutDialog.setVisible(true);
+			}
+		});
+	    
+	    
+	    //JMenuItem test4 = new JMenuItem("test3", KeyEvent.VK_4);
+	    
+	    fileMenu.add(exit);	    
+	    settingsMenu.add(hostSettings);	    
+	    helpMenu.add(about);
+	    
+	   // fileMenu.add(test4);
+	    
+	    menuBar.add(fileMenu);
+	    menuBar.add(settingsMenu);
+	    menuBar.add(helpMenu);
+	    
+	    this.setJMenuBar(menuBar);
 		
 		// Adding GUI components
 		add(toolbar,            BorderLayout.NORTH);
@@ -180,6 +273,7 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		setSize(720, 640);
 		setExtendedState(java.awt.Frame.MAXIMIZED_BOTH);
 		setVisible(true);
+			
 	}
 
 	/**
@@ -214,6 +308,8 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		
 		new MainGui();
 	}
+	
+	
 
 	@Override
 	public void windowClosing(java.awt.event.WindowEvent e) {
@@ -254,6 +350,26 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 			sendFile();	
 		}
 	}
+	
+	
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+	}
+	
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub			
+	}
+	
+	@Override
+	public void keyPressed(KeyEvent e) {
+		// TODO Auto-generated method stub		
+		if(e.getKeyCode() == KeyEvent.VK_ENTER){
+			System.out.println("Enter key Pressed");
+			sendClicked();
+		}
+	}		
 
 	/**
 	 * thread for listening all incoming UDP messages
@@ -377,7 +493,7 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		String otherHost = l[0];
 		String filePath = l[1];
 		String otherIP = htblUsers.get(otherHost);
-		
+			
 		Path p = Paths.get(filePath);
 	    String fileName = p.getFileName().toString();
 		

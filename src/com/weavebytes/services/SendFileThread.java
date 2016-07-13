@@ -34,7 +34,7 @@ public class SendFileThread extends Thread {
 		System.out.println("[SendFileThread] :: started... ");
 
 		try {
-			
+					
 			Socket socket = new Socket(InetAddress.getByName(otherIP), Config.TCP_PORT);
 
 
@@ -66,6 +66,7 @@ public class SendFileThread extends Thread {
 				contents = new byte[size]; 
 				bis.read(contents, 0, size); 
 				os.write(contents);
+				
 				System.out.print("Sending file ... "+(current*100)/fileLength+"% complete!");
 			}   
 

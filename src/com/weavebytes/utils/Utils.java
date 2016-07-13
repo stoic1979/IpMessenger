@@ -43,14 +43,12 @@ public class Utils {
 	        while (addresses.hasMoreElements()){
 	            InetAddress ip = addresses.nextElement();
 	            if (ip instanceof Inet4Address){
-
+	            	
 	                if (ip.isSiteLocalAddress()){
 
 	                    ipAddress = ip.getHostAddress();
 	                }
-
 	            }
-
 	        }
 	    }
 	    return ipAddress;

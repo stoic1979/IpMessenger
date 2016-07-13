@@ -32,7 +32,7 @@ public class ReceiveFileThread  extends Thread {
 
 		try {
 			
-			ServerSocket ssock = new ServerSocket(Config.TCP_PORT);
+			ServerSocket ssock = new ServerSocket(Config.TCP_PORT);			
 			Socket socket = ssock.accept();
 			
 			byte[] contents = new byte[10000];
