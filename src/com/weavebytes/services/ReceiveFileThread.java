@@ -1,11 +1,20 @@
 package com.weavebytes.services;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 
 import com.weavebytes.config.Config;
 
@@ -24,6 +33,7 @@ public class ReceiveFileThread  extends Thread {
 		this.port = port;
 	}
 
+	
 	/**
 	 * thread run method
 	 */
@@ -46,10 +56,30 @@ public class ReceiveFileThread  extends Thread {
 			//No of bytes read in one read() call
 			int bytesRead = 0; 
 
-			while((bytesRead=is.read(contents))!=-1)
+			//receiving file Message dialog window
+			JFrame recFileMessFrame =  new JFrame("Recieving File");
+			recFileMessFrame.setBounds(500, 300, 350, 200);
+		  	
+			
+		  	JPanel panel = new JPanel();
+		  	panel.setLayout(new GridLayout(9, 1));
+		  	
+		    for(int i = 0; i <= 2; i++){
+			    panel.add(new JPanel());
+			}
+		    //file recieving message panel
+			JPanel recievingMessPanel = new JPanel(new BorderLayout(5, 5));
+			JLabel waitLabel = new JLabel();
+			waitLabel.setText("Please wait... recieving file");
+			recievingMessPanel.add(waitLabel);
+			recievingMessPanel.setBackground(Color.white);
+			recFileMessFrame.add(recievingMessPanel);
+			recFileMessFrame.setVisible(true);
+			while((bytesRead=is.read(contents))!=-1){
 				bos.write(contents, 0, bytesRead); 
-
-			bos.flush(); 
+			}
+			bos.flush();
+			recFileMessFrame.setVisible(false);
 			socket.close();
 			ssock.close();
 		} catch(Exception e) {

@@ -3,6 +3,7 @@ package com.weavebytes.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -11,6 +12,7 @@ import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.SocketException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Hashtable;
@@ -29,6 +31,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -40,6 +43,7 @@ import javax.swing.event.ListSelectionListener;
 
 import java.io.File;
 
+import com.alee.laf.DefaultLayoutStyle;
 import com.alee.laf.WebLookAndFeel;
 import com.weavebytes.config.Config;
 import com.weavebytes.services.ReceiveFileThread;
@@ -131,10 +135,8 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		JButton btnRefresh = new JButton("Refresh");
 		btnRefresh.setActionCommand("Refresh");
 		btnRefresh.addActionListener(this);
-		btnRefresh.setLocation(100,200);
 		
-		//toolbar.add(btnRefresh);
-
+		
 		//---------------------------------------------------------
 		// CENTER
 		//---------------------------------------------------------
@@ -142,7 +144,7 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		pnlCenter.setLayout(new BorderLayout(5,5));
 
 		JPanel pnlCenterBottom = new JPanel();
-		pnlCenterBottom.setLayout(new BorderLayout(5,5));
+		pnlCenterBottom.setLayout(new BorderLayout(5, 5));
 
 		JButton btnSend = new JButton("Send");
 		btnSend.setActionCommand("Send");
@@ -211,7 +213,8 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 				System.exit(-1);
 				
 			}
-		});
+		});   
+	 
 	    
 	    //About dialog frame
 	    final JFrame aboutDialog = new JFrame("About Text Messenger..");
@@ -238,6 +241,33 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 				settings.setVisible(true);				
 			}
 		});
+	    
+    /*
+	  	JFrame progFrame =  new JFrame("Progress frame");
+	  	progFrame.setBounds(500, 300, 350, 200);
+	  	
+	  	JPanel panel = new JPanel();
+	  	panel.setLayout(new GridLayout(10, 1));
+	  	JProgressBar progressbar = new JProgressBar(0, 100); 	
+	  	progressbar.setSize(new Dimension(50, 15));
+	     progressbar.setValue(30);
+	     progressbar.setBackground(Color.white);
+        progressbar.setForeground(Color.green);
+	    for(int i = 0; i <= 2; i++){
+	    panel.add(new JPanel());
+	    }
+	    JPanel progressPanel = new JPanel(new BorderLayout(5, 5));
+	    JLabel progressLabel = new JLabel();
+	    progressLabel.setText("\t\t\t\t\tSending file....");
+	    progressPanel.add(progressLabel);
+	    
+	    panel.add(progressPanel, BorderLayout.CENTER);
+	    panel.add(progressbar);
+	 
+	    progFrame.add(panel);
+	    progFrame.setVisible(true);		
+	  			     
+	  */	    
 	    
 	    JMenuItem about = new JMenuItem("About");	    
 	    about.addActionListener(new ActionListener() {
@@ -543,7 +573,7 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 	        
 	        
 	        Config.TCP_PORT++;
-	        
+	        System.out.println("TCP Port : " +  Config.TCP_PORT );
 		    Utils.sendUdpMsg("GMF" + myHost + "::" + Config.TCP_PORT + "::" + filePath, otherIP, Config.UDP_PORT);	
 		    new ReceiveFileThread(Config.TCP_PORT, savePath).start();
 	    }
@@ -566,7 +596,7 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		try {
 		System.out.println("processing GMF");
 		
-		String l[] = msg.split("\\::");
+		String l[] = msg.split("::");
 		
 		String otherHost = l[0];
 		String filePath = l[2];
