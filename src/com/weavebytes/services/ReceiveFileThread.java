@@ -10,9 +10,11 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Paths;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
@@ -23,14 +25,16 @@ public class ReceiveFileThread  extends Thread {
 
 	private String filePath;
     private int port;
+    private long fileSize;
 	/**
 	 * constructor
 	 * 
 	 * @param filePath
 	 */
-	public ReceiveFileThread(int port, String filePath) {
+	public ReceiveFileThread(int port, String filePath, int fileSize) {
 		this.filePath = filePath;
 		this.port = port;
+		this.fileSize = (long)fileSize; 
 	}
 
 	
@@ -39,14 +43,14 @@ public class ReceiveFileThread  extends Thread {
 	 */
 	public void run() {
 		
-		System.out.println("[ReceiveFileThread] :: started on port " + port);
-
+		System.out.println("[ReceiveFileThread] :: started on port " + port + "file size : " + fileSize);
+        int progress = 0;
 		try {
 			
 			ServerSocket ssock = new ServerSocket(port);			
 			Socket socket = ssock.accept();
-			
-			byte[] contents = new byte[10000];
+			int size = 10000;
+			byte[] contents = new byte[size];
 
 			//Initialize the FileOutputStream to the output file's full path.
 			FileOutputStream fos = new FileOutputStream(filePath);
@@ -55,31 +59,50 @@ public class ReceiveFileThread  extends Thread {
 
 			//No of bytes read in one read() call
 			int bytesRead = 0; 
-
+        
 			//receiving file Message dialog window
 			JFrame recFileMessFrame =  new JFrame("Recieving File");
 			recFileMessFrame.setBounds(500, 300, 350, 200);
-		  	
-			
+		  			
 		  	JPanel panel = new JPanel();
 		  	panel.setLayout(new GridLayout(9, 1));
 		  	
+		 	//progress bar for recieved data
+		  	JProgressBar progressbar = new JProgressBar(0, 100); 	
+		  	progressbar.setSize(new Dimension(100, 15));
+		    progressbar.setBackground(Color.white);
+		    progressbar.setForeground(Color.gray);		    
+		   
+		    //adding blank frame
 		    for(int i = 0; i <= 2; i++){
 			    panel.add(new JPanel());
 			}
-		    //file recieving message panel
-			JPanel recievingMessPanel = new JPanel(new BorderLayout(5, 5));
-			JLabel waitLabel = new JLabel();
-			waitLabel.setText("Please wait... recieving file");
-			recievingMessPanel.add(waitLabel);
-			recievingMessPanel.setBackground(Color.white);
-			recFileMessFrame.add(recievingMessPanel);
+		    
+		    JPanel progressPanel = new JPanel(new BorderLayout(5, 5));
+			JLabel progressLabel = new JLabel();
+			
+			//adding progress label to progress panel
+			progressPanel.add(progressLabel);			
+			panel.add(progressPanel);
+			
+		    //adding progress panel to main panel
+			panel.add(progressbar);
+		
+			recFileMessFrame.add(panel);
 			recFileMessFrame.setVisible(true);
-			while((bytesRead=is.read(contents))!=-1){
-				bos.write(contents, 0, bytesRead); 
+			long recFileSize = 0;
+			
+		    while((bytesRead=is.read(contents))!=-1){
+		    			   	
+		    	recFileSize += bytesRead; 
+		    	//change the progressbar value
+				progressbar.setValue((progress = (int)((recFileSize*100)/fileSize)));
+				progressLabel.setText("File Recieved......." + progress + "%");		
+				bos.write(contents, 0, bytesRead);
 			}
 			bos.flush();
 			recFileMessFrame.setVisible(false);
+			JOptionPane.showMessageDialog(null, "File recieved ! " + Paths.get(filePath).getFileName() );
 			socket.close();
 			ssock.close();
 		} catch(Exception e) {

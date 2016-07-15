@@ -2,12 +2,16 @@ package com.weavebytes.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -38,6 +42,7 @@ import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -66,9 +71,10 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 	/**
 	 * UI components
 	 */
-	private JTextField                  tfSendMsg;
+	private JTextArea                  tfSendMsg;
 	private JTextArea                   taMsgs;
 	private JList 						userList;
+	private JFrame						waitDialog;
 
 	/**
 	 * model to store string name of all hosts, 
@@ -125,7 +131,6 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 
 		setLayout(new BorderLayout(5,5));
 
-
 		//---------------------------------------------------------
 		// TOP
 		//---------------------------------------------------------
@@ -144,19 +149,23 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		pnlCenter.setLayout(new BorderLayout(5,5));
 
 		JPanel pnlCenterBottom = new JPanel();
+		
 		pnlCenterBottom.setLayout(new BorderLayout(5, 5));
 
 		JButton btnSend = new JButton("Send");
 		btnSend.setActionCommand("Send");
+		btnSend.setMaximumSize(new Dimension(100, 30));
 		btnSend.addActionListener(this);
 
-		tfSendMsg = new JTextField();
-		taMsgs    = new JTextArea();
+		tfSendMsg = new JTextArea();
+		tfSendMsg.setPreferredSize(new Dimension(200, 100));
 		
+		taMsgs    = new JTextArea();
+				
 		tfSendMsg.addKeyListener(this);
 		
 		JScrollPane msgsScrollPane = new JScrollPane(taMsgs);
-
+				
 		pnlCenterBottom.add(tfSendMsg, BorderLayout.CENTER);
 		pnlCenterBottom.add(btnSend,   BorderLayout.EAST);
 		pnlCenter.add(msgsScrollPane,  BorderLayout.CENTER);
@@ -177,7 +186,7 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		// RIGHT
 		//---------------------------------------------------------
 		JPanel pnlRight = new JPanel();
-		pnlRight.setLayout(new GridLayout(20, 1));
+		pnlRight.setLayout(new GridLayout(20, 1, 5, 10));
 		JButton btnSendFile = new JButton("Send File");
 		btnSendFile.setActionCommand("Send File");
 		btnSendFile.addActionListener(this);
@@ -214,15 +223,29 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 				
 			}
 		});   
-	 
 	    
+	    tfSendMsg.addKeyListener(new KeyAdapter() {
+	    	int size = 40;
+	    	int start = 0;
+	    	@Override
+	    	public void keyTyped(KeyEvent e) {
+	    		
+	    		if(tfSendMsg.getText().length() == size){
+	    			tfSendMsg.append("\n" + "start : " + start + " end : " +size + tfSendMsg.getText().substring(start, size));
+	    			start = size;
+	    			size += 40;
+	    			
+	    		}
+	    	}
+		});
+	   
 	    //About dialog frame
 	    final JFrame aboutDialog = new JFrame("About Text Messenger..");
 	    aboutDialog.setSize(450, 600);  
 	    aboutDialog.setLocation(200, 100);
 	    
 	    JLabel aboutText = new JLabel();
-	    aboutText.setText("IP Messenger IP Messenger IP Messenger IP Messenger IP Messenger IP Messenger IP Messenger IP Messenger");
+	    aboutText.setText("<html>IP Messenger IP Messenger IP Messenger <br> IP Messenger IP Messenger IP Messenger <br> IP Messenger IP Messenger</html>");
 	    aboutText.setSize(350, 600);
 	    
 	    aboutDialog.getContentPane().add(aboutText);
@@ -241,35 +264,11 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 				settings.setVisible(true);				
 			}
 		});
+		    
+	    //Menu about dialog 
+	    JMenuItem about = new JMenuItem("About");
 	    
-    /*
-	  	JFrame progFrame =  new JFrame("Progress frame");
-	  	progFrame.setBounds(500, 300, 350, 200);
-	  	
-	  	JPanel panel = new JPanel();
-	  	panel.setLayout(new GridLayout(10, 1));
-	  	JProgressBar progressbar = new JProgressBar(0, 100); 	
-	  	progressbar.setSize(new Dimension(50, 15));
-	     progressbar.setValue(30);
-	     progressbar.setBackground(Color.white);
-        progressbar.setForeground(Color.green);
-	    for(int i = 0; i <= 2; i++){
-	    panel.add(new JPanel());
-	    }
-	    JPanel progressPanel = new JPanel(new BorderLayout(5, 5));
-	    JLabel progressLabel = new JLabel();
-	    progressLabel.setText("\t\t\t\t\tSending file....");
-	    progressPanel.add(progressLabel);
-	    
-	    panel.add(progressPanel, BorderLayout.CENTER);
-	    panel.add(progressbar);
-	 
-	    progFrame.add(panel);
-	    progFrame.setVisible(true);		
-	  			     
-	  */	    
-	    
-	    JMenuItem about = new JMenuItem("About");	    
+	    //actionListener for Menu about
 	    about.addActionListener(new ActionListener() {
 			
 			@Override
@@ -278,15 +277,10 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 			}
 		});
 	    
-	    
-	    //JMenuItem test4 = new JMenuItem("test3", KeyEvent.VK_4);
-	    
 	    fileMenu.add(exit);	    
 	    settingsMenu.add(hostSettings);	    
 	    helpMenu.add(about);
-	    
-	   // fileMenu.add(test4);
-	    
+	    	    
 	    menuBar.add(fileMenu);
 	    menuBar.add(settingsMenu);
 	    menuBar.add(helpMenu);
@@ -424,7 +418,7 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 				try {
 					socket.receive(dp);
 					String s = new String(dp.getData(), 0, dp.getLength());
-					System.out.println("Got msg: " + s);
+					System.out.println("Got msg ::: " + s);
 					processMessage(s);
 					Thread.yield();
 				} catch (IOException ex) {
@@ -529,18 +523,21 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 	 * @param msg
 	 */
 	private void processSFR(String msg) {
-		
+	    
 		String l[] = msg.split("\\::");
 		
 		String otherHost = l[0];
-		String filePath = l[1];
+		String filePath = l[1];		
+		int fileSize = Integer.parseInt(l[2]);
+		System.out.println("File length: " + fileSize);
+		
 		String otherIP = htblUsers.get(otherHost);
 			
 		Path p = Paths.get(filePath);
 	    String fileName = p.getFileName().toString();
-		
-	    System.out.println("filePath = " + filePath);
-	    System.out.println("fileName = " + fileName);
+	
+	    //System.out.println("filePath = " + filePath);
+	    //System.out.println("fileName = " + fileName);
 	      
 		JDialog.setDefaultLookAndFeelDecorated(true);
 	    int response = JOptionPane.showConfirmDialog(null, 
@@ -550,6 +547,7 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 	    
 	    if (response == JOptionPane.NO_OPTION) {
 	      System.out.println("No button clicked");
+	      Utils.sendUdpMsg("GMF" + myHost + "::" + "" + "::" + "No file", otherIP, Config.UDP_PORT);
 	    } else if (response == JOptionPane.YES_OPTION) {
 	    
 	    System.out.println("Yes button clicked");  
@@ -574,8 +572,9 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 	        
 	        Config.TCP_PORT++;
 	        System.out.println("TCP Port : " +  Config.TCP_PORT );
-		    Utils.sendUdpMsg("GMF" + myHost + "::" + Config.TCP_PORT + "::" + filePath, otherIP, Config.UDP_PORT);	
-		    new ReceiveFileThread(Config.TCP_PORT, savePath).start();
+		  	
+		    new ReceiveFileThread(Config.TCP_PORT, savePath, fileSize).start();
+		    Utils.sendUdpMsg("GMF" + myHost + "::" + Config.TCP_PORT + "::" + filePath, otherIP, Config.UDP_PORT);
 	    }
 	   
 	         
@@ -594,22 +593,28 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 	private void processGMF(String msg) {
 		
 		try {
+			this.waitDialog.setVisible(false);
 		System.out.println("processing GMF");
 		
 		String l[] = msg.split("::");
-		
-		String otherHost = l[0];
 		String filePath = l[2];
+		String otherHost = l[0];
+		//check for file
+		if(!filePath.equals("No file"))
+		{		
 		int    port     = Integer.parseInt(l[1]);
 		String otherIP = htblUsers.get(otherHost);
-		
+			
 		Path p = Paths.get(filePath);
 	    String fileName = p.getFileName().toString();
 	    
 	    System.out.println(String.format("+++ got otherHost=%s, filePath=%s, ip=%d, otherIP=%s", otherHost, filePath, port, otherIP));
-	    
-	     
+	    	     
 	    new SendFileThread(filePath, otherIP, port).start();
+		}
+		else{
+				JOptionPane.showMessageDialog(null,  otherHost + " : Refused to accept the file");
+		 }
 		} catch(Exception e) {
 			System.out.println("processGMF exception ::" + e);
 			e.printStackTrace();
@@ -640,6 +645,27 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		tfSendMsg.setText("");
 	}
 	
+	public JFrame showWaitingDialog(String Otherhost, String filename){
+		  JFrame sendFileWaitFrm = new JFrame("Waiting for reply");
+		  sendFileWaitFrm.setBounds(500, 300, 300, 150);
+          JPanel waitPanel = new JPanel(new GridLayout(5, 1, 5, 5));
+          JLabel waitLabel = new JLabel();
+          JLabel fileNameLabel = new JLabel();
+          JLabel hostNameLabel = new JLabel();
+          waitLabel.setText("               Waiting for receiving file  ");
+          
+          hostNameLabel.setText("        Host Name               :         " + Otherhost);
+          fileNameLabel.setText("        File Name                 :         " + filename );
+          
+          waitPanel.add(new JPanel());
+          waitPanel.add(waitLabel);
+          waitPanel.add(hostNameLabel);
+          waitPanel.add(fileNameLabel);
+          sendFileWaitFrm.add(waitPanel);
+          sendFileWaitFrm.setVisible(true);         
+          return sendFileWaitFrm;
+	}
+	
 	/**
 	 * function sends a "SFR - Send File Request" to other user
 	 */
@@ -650,7 +676,7 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
 		
 		JFileChooser fileChooser = new JFileChooser();
         int returnValue = fileChooser.showOpenDialog(null);
-        
+                  
         if (returnValue == JFileChooser.APPROVE_OPTION) {
            File selectedFile = fileChooser.getSelectedFile();
            
@@ -659,8 +685,9 @@ public class MainGui extends JFrame implements WindowListener, ActionListener, R
            System.out.println("getSelectedFile() : " + fileChooser.getSelectedFile());
            
            String fullPath = fileChooser.getSelectedFile().toString();
-           
-           Utils.sendUdpMsg("SFR" + myHost + "::" + fullPath, otherIP, Config.UDP_PORT);	
+                      
+           Utils.sendUdpMsg("SFR" + myHost + "::" + fullPath + "::" + new File(fullPath).length(), otherIP, Config.UDP_PORT);	
+         this.waitDialog =  showWaitingDialog(otherHost, Paths.get(fullPath).getFileName().toString());
         }
 	}
 

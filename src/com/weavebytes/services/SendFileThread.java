@@ -69,24 +69,27 @@ public class SendFileThread extends Thread {
 			long fileLength = file.length(); 
 			long current = 0;
 			
+			//Frame to display the progress bar
 			JFrame progFrame =  new JFrame("Progress frame");
 		  	progFrame.setBounds(500, 300, 350, 200);
 		  	
 		  	JPanel panel = new JPanel();
 		  	panel.setLayout(new GridLayout(10, 1));
+		  	
+		  	//Progress bar
 		  	JProgressBar progressbar = new JProgressBar(0, 100); 	
 		  	progressbar.setSize(new Dimension(100, 15));
 		    progressbar.setBackground(Color.white);
-		    progressbar.setForeground(Color.gray);		    
+		    progressbar.setForeground(Color.green);		    
 		   
+		    //adding blank frames
 		    for(int i = 0; i <= 2; i++){
 			    panel.add(new JPanel());
 			}
 			JPanel progressPanel = new JPanel(new BorderLayout(5, 5));
 			JLabel progressLabel = new JLabel();
-			
-			progressPanel.add(progressLabel);
-			    
+		
+			progressPanel.add(progressLabel);	    
 			panel.add(progressPanel, BorderLayout.EAST);
 			panel.add(progressbar);
 		 
@@ -94,6 +97,8 @@ public class SendFileThread extends Thread {
 		    progFrame.setVisible(true);		
 		  			
 			long start = System.nanoTime();
+			
+		   //Going to receive data
 			while(current!=fileLength){ 
 				int size = 10000;
 				if(fileLength - current >= size)
@@ -114,15 +119,17 @@ public class SendFileThread extends Thread {
 			os.flush(); 
 			//File transfer done. Close the socket connection!
 			socket.close();
-		  JOptionPane.showMessageDialog(null, "File sent successfully !");
-			     
-		
-		}catch(Exception e) {
+			//showing the success message
+		  JOptionPane.showMessageDialog(null, "File sent successfully !");		 
+		  System.out.println("[SendFileThread] :: File sent succesfully!");  		
+		}
+		catch(Exception e)
+		{
 			System.out.println("[SendFileThread] :: exception: " + e);
 			e.printStackTrace();
-		}
-
-		System.out.println("[SendFileThread] :: File sent succesfully!");           
+			JOptionPane.showMessageDialog(null,"Failed to send file. Please send again");
+			System.out.println(" File not sent !");  
+		}		         
 	}
 
 }//SendFileThread
